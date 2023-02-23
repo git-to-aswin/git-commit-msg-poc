@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+const fs = require("fs");
+// const { execSync } = require("child_process");
+
+// function executeGitCommand(command) {
+//   return execSync(command)
+//     .toString("utf8")
+//     .replace(/[\n\r\s]+$/, "");
+// }
+
+// const branchName = executeGitCommand("git branch --show-current");
+
+const commitMsgFile = process.argv[2];
+const commitMessage = fs.readFileSync(commitMsgFile, "utf8").trim();
+console.log("checking commit");
+const regexCommit = /OMS-[1-9]/gi;
+
+if (!commitMessage.match(regexCommit)) {
+  // if(!commitMessage.includes(branchName)){
+  //     console.log("\n Branch name and commit jira ID is not match.\n");
+  //     process.exit(1)
+  // }
+  // else{
+  console.log(`\n Check the commit message: ${commitMessage} \n`);
+  process.exit(1);
+  // }
+} else {
+  process.exit(0);
+}

@@ -1,0 +1,21 @@
+{
+  "name": "git-commit-msg-poc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup:git-hooks": "chmod +x .git-hooks/* && git config core.hooksPath .git-hooks",
+    "postinstall": "npm run setup:git-hooks"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aswin-kumar-1999/git-commit-msg-poc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aswin-kumar-1999/git-commit-msg-poc/issues"
+  },
+  "homepage": "https://github.com/aswin-kumar-1999/git-commit-msg-poc#readme"
+}
