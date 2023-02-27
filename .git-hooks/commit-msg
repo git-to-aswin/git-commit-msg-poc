@@ -1,30 +1,85 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-// const { execSync } = require("child_process");
+const { execSync } = require("child_process");
 
-// function executeGitCommand(command) {
-//   return execSync(command)
-//     .toString("utf8")
-//     .replace(/[\n\r\s]+$/, "");
-// }
+console.log(
+  "\n=======================================🍻 Commit validation 🍻==============================================\n",
+);
 
-// const branchName = executeGitCommand("git branch --show-current");
+let validationFlag = 0;
+
+function executeGitCommand(command) {
+  return execSync(command)
+    .toString("utf8")
+    .replace(/[\n\r\s]+$/, "");
+}
+
+const branchName = executeGitCommand("git branch --show-current").toLowerCase();
+
+const ticketID = branchName.slice(
+  branchName.indexOf("oms"),
+  branchName.indexOf("-", branchName.indexOf("oms") + 4),
+);
 
 const commitMsgFile = process.argv[2];
 const commitMessage = fs.readFileSync(commitMsgFile, "utf8").trim();
-console.log("checking commit");
-const regexCommit = /OMS-[1-9]/gi;
 
-if (!commitMessage.match(regexCommit)) {
-  // if(!commitMessage.includes(branchName)){
-  //     console.log("\n Branch name and commit jira ID is not match.\n");
-  //     process.exit(1)
-  // }
-  // else{
-  console.log(`\n Check the commit message: ${commitMessage} \n`);
-  process.exit(1);
-  // }
-} else {
-  process.exit(0);
+function branchValidation() {
+  const typeOfTicket = [
+    "tech-spec",
+    "tech-debt",
+    "tech-task",
+    "tech-solutioning",
+    "bug",
+    "sprint-bug",
+    "epic",
+    "story",
+    "feature",
+    "sub-task",
+  ];
+  const ticketType = typeOfTicket.find((type) => branchName.includes(type));
+  if (!ticketType) {
+    console.log("🥸 Branch name does not contain Ticket type. \n");
+    validationFlag = 1;
+  }
+  if (!ticketID) {
+    console.log("🥸 Branch name does not contain Ticket number.\n");
+    validationFlag = 1;
+  }
+  if (!validationFlag) {
+    console.log("🤩 Branch name validation is passed.\n");
+  }
 }
+
+function commitValidation() {
+  // check commit has ticket number
+  if (!commitMessage.includes(ticketID)) {
+    console.log(`🥸 Check the commit message: ${commitMessage}.\n`);
+    validationFlag = 1;
+  }
+
+  // checking branch name and commit jira ID matches
+  if (!commitMessage.toLowerCase().includes(ticketID)) {
+    console.log("🥸 Branch name and commit jira ID is not same.\n");
+    validationFlag = 1;
+  }
+
+  // Success commit
+  if (!validationFlag) {
+    console.log("🤩 Commit message validation is passed.\n");
+  }
+}
+
+branchValidation();
+commitValidation();
+
+!validationFlag
+  ? console.info(
+      "\n=====================================🥳 Passed commit validation 🥳=========================================\n",
+    )
+  : console.warn(
+      "\n=====================================💀 Commit validation failed 💀=========================================\n",
+    );
+
+process.exit(validationFlag);
